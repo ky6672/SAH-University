@@ -255,7 +255,7 @@
         <div class="max-w-3xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-serif font-bold text-sah-dark mb-4" data-i18n="form_title">Join the Community</h2>
-                <p class="text-gray-500" data-i18n="form_desc">Complete the form below. Our AI Admissions Office will generate your offer letter instantly.</p>
+                <p class="text-gray-500" data-i18n="form_desc">Complete the form below. Our AI Admissions Office will generate your offer letter and unique Student ID instantly.</p>
             </div>
 
             <form id="applicationForm" class="space-y-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
@@ -294,6 +294,7 @@
                         <span id="btn-text" data-i18n="form_submit">Submit Application</span>
                         <i id="btn-icon" class="fas fa-paper-plane ml-2 group-hover:translate-x-1 transition"></i>
                     </button>
+                    <p id="enrollment-status" class="text-center text-xs text-gray-400 mt-4"></p>
                 </div>
             </form>
         </div>
@@ -334,6 +335,10 @@
                                 <p class="font-bold text-gray-900">Admissions Office <span class="font-normal text-gray-500">&lt;offer@sah.edu&gt;</span></p>
                                 <p class="text-gray-500">To: <span id="recipientEmail">you@example.com</span></p>
                             </div>
+                        </div>
+                        <!-- Student ID Badge -->
+                        <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-mono font-bold border border-blue-200">
+                            ID: <span id="studentIdDisplay">PENDING</span>
                         </div>
                     </div>
                 </div>
@@ -391,7 +396,7 @@
                 ai_curriculum: "Core Curriculum",
                 ai_waiting: "Waiting for input...",
                 form_title: "Join the Community",
-                form_desc: "Complete the form below. Our AI Admissions Office will generate your offer letter instantly.",
+                form_desc: "Complete the form below. Our AI Admissions Office will generate your offer letter and unique Student ID instantly.",
                 form_type: "Inquiry Type",
                 form_fname: "First Name",
                 form_lname: "Last Name",
@@ -406,6 +411,8 @@
                 ai_thinking: "AI is thinking...",
                 ai_writing: "AI is drafting your letter...",
                 placeholder_interest: "e.g., Video games, napping, drinking coffee...",
+                error_full: "Admissions for this month are full (Max 99999).",
+                id_prefix: "Student ID",
             },
             zh: {
                 nav_philosophy: "办学理念",
@@ -434,7 +441,7 @@
                 ai_curriculum: "核心课程",
                 ai_waiting: "等待输入...",
                 form_title: "加入 SAH 社区",
-                form_desc: "填写下方信息，AI 招生办将为您实时生成录取通知书。",
+                form_desc: "填写下方信息，AI 招生办将为您实时生成录取通知书并分配唯一学号。",
                 form_type: "咨询类型",
                 form_fname: "名 (First Name)",
                 form_lname: "姓 (Last Name)",
@@ -449,6 +456,8 @@
                 ai_thinking: "AI 正在绞尽脑汁...",
                 ai_writing: "AI 正在为您撰写录取信...",
                 placeholder_interest: "例如：喜欢在沙发上躺着、喝奶茶、观察天花板纹理...",
+                error_full: "本月招生名额已满（限99999人）。",
+                id_prefix: "学号",
             }
         };
 
@@ -599,15 +608,53 @@
             btn.disabled = false;
         }
 
-        // --- 7. ADMISSION FORM ---
+        // --- 7. STUDENT ID GENERATOR ---
+        function generateStudentId() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(-2); // "26"
+            // Pad month to 2 digits (Feb is 02)
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            
+            // Create a unique key for storage based on Year-Month
+            const storageKey = `sah_student_count_${year}_${month}`;
+
+            // Get current count from localStorage (simulating DB)
+            let currentCount = parseInt(localStorage.getItem(storageKey) || "0");
+
+            // Check if we reached the limit (99999)
+            if (currentCount > 99999) {
+                return null; // Return null to indicate full
+            }
+
+            // Create the ID string: YY MM XXXXX (currentCount is the ID of THIS student)
+            // Example: 26 02 00000
+            const sequenceStr = currentCount.toString().padStart(5, '0');
+            const studentId = `${year}${month}${sequenceStr}`;
+
+            // Increment storage for the NEXT person
+            localStorage.setItem(storageKey, (currentCount + 1).toString());
+
+            return studentId;
+        }
+
+        // --- 8. ADMISSION FORM & ID LOGIC ---
         document.getElementById('applicationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Try to generate ID first
+            const studentId = generateStudentId();
+            
+            if (!studentId) {
+                alert(translations[currentLang].error_full);
+                return;
+            }
+
             const btn = this.querySelector('button');
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
             const modal = document.getElementById('emailModal');
             const emailContent = document.getElementById('emailContentArea');
+            const studentIdDisplay = document.getElementById('studentIdDisplay');
             
             const fname = document.getElementById('first-name').value;
             const lname = document.getElementById('last-name').value;
@@ -618,12 +665,14 @@
             btnText.innerText = translations[currentLang].ai_writing;
             btnIcon.className = "fas fa-circle-notch fa-spin ml-2";
 
+            // Update Email Modal with generated ID
             document.getElementById('recipientEmail').innerText = email;
+            studentIdDisplay.innerText = studentId;
             
             // AI Request
             const isEn = currentLang === 'en';
             const langName = isEn ? "English" : "Chinese";
-            const systemPrompt = `You are the Admissions Officer at SAH University. Write a short, warm, humorous acceptance email. Theme: 'Student is the teacher'. Language: ${langName}. Use Markdown.`;
+            const systemPrompt = `You are the Admissions Officer at SAH University. Write a short, warm, humorous acceptance email. Theme: 'Student is the teacher'. Language: ${langName}. Use Markdown. Include the student ID: ${studentId}.`;
             const userPrompt = `Applicant: ${fname} ${lname}. Accept them immediately. Keep it under 100 words.`;
 
             const aiResponse = await callGemini(userPrompt, systemPrompt);
