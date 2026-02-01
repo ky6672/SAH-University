@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAH University | The University of You</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', '"Noto Serif SC"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        sah: {
+                            dark: '#0f172a', // Slate 900
+                            primary: '#3b82f6', // Blue 500
+                            accent: '#f59e0b', // Amber 500
+                            light: '#f8fafc', // Slate 50
+                            paper: '#ffffff'
+                        }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .chart-wrapper { position: relative; width: 100%; height: 300px; }
+        .bg-grid {
+            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+                              linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Email Overlay */
+        .email-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-sah-primary selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-40 bg-sah-light/95 backdrop-blur-md border-b border-gray-200 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center space-x-4 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 bg-sah-dark text-white flex items-center justify-center font-serif font-bold text-xl rounded shadow-lg">S</div>
+                    <span class="font-serif font-bold text-2xl tracking-tight text-sah-dark hidden md:block">SAH University</span>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex space-x-8 text-sm font-medium tracking-wide">
+                        <a href="#philosophy" class="text-gray-500 hover:text-sah-primary transition" data-i18n="nav_philosophy">Philosophy</a>
+                        <a href="#growth" class="text-gray-500 hover:text-sah-primary transition" data-i18n="nav_growth">Growth</a>
+                        <a href="#ai-degree" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-bold hover:opacity-80 transition">
+                            <i class="fas fa-sparkles mr-1"></i><span data-i18n="nav_ai">AI Degree</span>
+                        </a>
+                    </div>
+
+                    <!-- Language Switcher -->
+                    <button onclick="toggleLanguage()" class="flex items-center space-x-1 bg-white border border-gray-300 px-3 py-1.5 rounded-full text-xs font-bold hover:border-sah-primary hover:text-sah-primary transition shadow-sm">
+                        <i class="fas fa-globe"></i>
+                        <span id="lang-label">EN</span>
+                    </button>
+
+                    <a href="#apply" class="hidden md:block px-5 py-2.5 bg-sah-dark text-white text-sm font-medium rounded hover:bg-gray-800 transition shadow-lg shadow-gray-200" data-i18n="nav_apply">
+                        Apply Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden bg-grid">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="max-w-4xl animate-slide-up">
+                <p class="text-sah-primary font-bold tracking-widest uppercase mb-4 text-sm">Stay at Home University</p>
+                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-black text-sah-dark leading-tight mb-8">
+                    <span data-i18n="hero_title_1">The best teacher,</span><br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-sah-primary to-blue-300" data-i18n="hero_title_2">is yourself.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 font-light max-w-2xl leading-relaxed mb-10" data-i18n="hero_desc">
+                    SAH is a university without walls. Here, we redefine education. Not for the diploma, but for lifelong growth.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#apply" class="group inline-flex items-center text-lg font-semibold text-sah-dark border-b-2 border-sah-dark pb-1 hover:text-sah-primary hover:border-sah-primary transition">
+                        <span data-i18n="hero_cta">Start Registration</span>
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Decorative Elements -->
+        <div class="absolute right-0 top-1/4 -translate-y-1/2 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float hidden lg:block"></div>
+    </header>
+
+    <!-- Philosophy Grid -->
+    <section id="philosophy" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <!-- Value 1 -->
+                <div class="group">
+                    <div class="w-12 h-12 border border-gray-200 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sah-dark group-hover:border-sah-dark transition duration-300">
+                        <i class="fas fa-book-open text-gray-400 group-hover:text-white transition"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-sah-dark mb-3" data-i18n="val_1_title">Continuous Learning</h3>
+                    <p class="text-gray-500 leading-relaxed text-sm" data-i18n="val_1_desc">Learning is as natural as breathing. Every book, movie, and thought is a course.</p>
+                </div>
+                <!-- Value 2 -->
+                <div class="group">
+                    <div class="w-12 h-12 border border-gray-200 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sah-dark group-hover:border-sah-dark transition duration-300">
+                        <i class="fas fa-chart-line text-gray-400 group-hover:text-white transition"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-sah-dark mb-3" data-i18n="val_2_title">Lifelong Growth</h3>
+                    <p class="text-gray-500 leading-relaxed text-sm" data-i18n="val_2_desc">We focus on the compound effect. Tiny daily improvements build towers of cognition.</p>
+                </div>
+                <!-- Value 3 -->
+                <div class="group">
+                    <div class="w-12 h-12 border border-gray-200 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sah-dark group-hover:border-sah-dark transition duration-300">
+                        <i class="fas fa-compass text-gray-400 group-hover:text-white transition"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-sah-dark mb-3" data-i18n="val_3_title">Free Exploration</h3>
+                    <p class="text-gray-500 leading-relaxed text-sm" data-i18n="val_3_desc">No mandatory courses. Follow your curiosity and navigate the ocean of knowledge.</p>
+                </div>
+                <!-- Value 4 -->
+                <div class="group">
+                    <div class="w-12 h-12 border border-gray-200 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sah-dark group-hover:border-sah-dark transition duration-300">
+                        <i class="fas fa-mountain text-gray-400 group-hover:text-white transition"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-sah-dark mb-3" data-i18n="val_4_title">Self Transcendence</h3>
+                    <p class="text-gray-500 leading-relaxed text-sm" data-i18n="val_4_desc">Yesterday's you is your only competition. We celebrate every break from the comfort zone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Growth Visualization -->
+    <section id="growth" class="py-24 bg-sah-light border-y border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/3">
+                    <h2 class="text-3xl font-serif font-bold text-sah-dark mb-6" data-i18n="chart_header">Compound Growth</h2>
+                    <p class="text-gray-600 mb-6" data-i18n="chart_desc">
+                        At SAH, we believe in the power of improving 1% every day. Traditional education may end, but SAH is linear and continuous.
+                    </p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-sah-primary rounded-full mr-2"></span>SAH</span>
+                        <span class="flex items-center"><span class="w-3 h-3 bg-gray-300 rounded-full mr-2"></span>Traditional</span>
+                    </div>
+                </div>
+                <div class="lg:w-2/3 w-full bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="chart-wrapper">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Degree Generator -->
+    <section id="ai-degree" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-purple-100 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-purple-50 border border-purple-100 text-purple-600 text-sm font-medium mb-4">
+                    <i class="fas fa-magic mr-2"></i> Powered by Gemini AI
+                </div>
+                <h2 class="text-4xl font-serif font-bold text-sah-dark mb-4" data-i18n="ai_title">AI Degree Generator</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto" data-i18n="ai_desc">
+                    Don't know what to study? Tell our AI Dean your hobbies (even sleeping), and we'll craft a prestigious-sounding degree for you.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 shadow-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-3" data-i18n="ai_input_label">Your Interests / Hobbies</label>
+                    <textarea id="ai-interests" rows="4" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200 py-3 px-4 mb-6 transition resize-none" placeholder="e.g., Video games, napping, drinking coffee..."></textarea>
+                    
+                    <button onclick="generateDegree()" id="btn-generate-degree" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition transform hover:-translate-y-1 shadow-md flex justify-center items-center">
+                        <span data-i18n="ai_btn">✨ Generate My Degree</span>
+                    </button>
+                </div>
+
+                <div id="degree-result-container" class="relative">
+                    <div id="degree-loading" class="hidden absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl">
+                        <i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-4"></i>
+                        <p class="text-purple-600 font-medium animate-pulse">AI is thinking...</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl border-4 border-double border-gray-200 shadow-xl text-center relative overflow-hidden group">
+                        <div class="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">
+                            <i class="fas fa-university text-9xl text-sah-dark"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-sah-dark text-white rounded-full flex items-center justify-center text-2xl font-serif font-bold mx-auto mb-6 shadow-lg">S</div>
+                            <h3 class="text-xs font-bold text-gray-400 tracking-[0.3em] uppercase mb-2">Stay at Home University</h3>
+                            <div class="h-px w-24 bg-gray-300 mx-auto mb-6"></div>
+                            
+                            <h4 class="text-gray-500 text-sm mb-2" data-i18n="ai_card_label">Degree Conferred</h4>
+                            <h2 id="ai-degree-title" class="text-2xl md:text-3xl font-serif font-bold text-sah-dark mb-6 min-h-[3rem] flex items-center justify-center">
+                                ...
+                            </h2>
+
+                            <div class="text-left bg-purple-50 rounded-xl p-5 border border-purple-100">
+                                <h5 class="text-xs font-bold text-purple-600 uppercase mb-3 flex items-center">
+                                    <i class="fas fa-list-ul mr-2"></i> <span data-i18n="ai_curriculum">Core Curriculum</span>
+                                </h5>
+                                <ul id="ai-degree-courses" class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start"><span class="mr-2 opacity-50">•</span> <span data-i18n="ai_waiting">Waiting for input...</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Form -->
+    <section id="apply" class="py-24 bg-sah-light relative border-t border-gray-200">
+        <div class="max-w-3xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-serif font-bold text-sah-dark mb-4" data-i18n="form_title">Join the Community</h2>
+                <p class="text-gray-500" data-i18n="form_desc">Complete the form below. Our AI Admissions Office will generate your offer letter instantly.</p>
+            </div>
+
+            <form id="applicationForm" class="space-y-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700" data-i18n="form_type">Inquiry Type</label>
+                    <select class="w-full border-gray-300 rounded-md shadow-sm py-3 px-4 bg-gray-50 border focus:border-sah-primary focus:ring-1 focus:ring-sah-primary focus:outline-none">
+                        <option value="general">General Inquiry</option>
+                        <option value="program">Program Details</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700" data-i18n="form_fname">First Name</label>
+                        <input type="text" id="first-name" required class="w-full border-gray-300 rounded-md shadow-sm py-3 px-4 border focus:border-sah-primary focus:ring-1 focus:ring-sah-primary focus:outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700" data-i18n="form_lname">Last Name</label>
+                        <input type="text" id="last-name" required class="w-full border-gray-300 rounded-md shadow-sm py-3 px-4 border focus:border-sah-primary focus:ring-1 focus:ring-sah-primary focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700" data-i18n="form_email">Email</label>
+                        <input type="email" id="email" required class="w-full border-gray-300 rounded-md shadow-sm py-3 px-4 border focus:border-sah-primary focus:ring-1 focus:ring-sah-primary focus:outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700" data-i18n="form_phone">Phone</label>
+                        <input type="tel" id="phone" class="w-full border-gray-300 rounded-md shadow-sm py-3 px-4 border focus:border-sah-primary focus:ring-1 focus:ring-sah-primary focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-sah-dark text-white font-bold py-4 rounded-lg hover:bg-gray-800 transition transform hover:-translate-y-0.5 shadow-lg flex justify-center items-center group">
+                        <span id="btn-text" data-i18n="form_submit">Submit Application</span>
+                        <i id="btn-icon" class="fas fa-paper-plane ml-2 group-hover:translate-x-1 transition"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-sah-dark text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="font-serif font-bold text-white text-lg">SAH University</span>
+                <p class="text-sm mt-1">Est. 2020 • Worldwide</p>
+            </div>
+            <div class="text-sm text-gray-500">
+                &copy; 2026 Stay at Home University. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="fixed inset-0 z-50 hidden email-overlay flex items-center justify-center px-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl transform transition-all duration-300 scale-95 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center justify-between shrink-0">
+                <div class="flex space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div class="text-xs text-gray-500 font-mono">Inbox (1)</div>
+                <button onclick="closeEmail()" class="text-gray-400 hover:text-gray-600 focus:outline-none"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto">
+                <div class="border-b border-gray-100 pb-6 mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2" data-i18n="email_subject">Admission Offer: Welcome to SAH</h2>
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-sah-dark text-white flex items-center justify-center font-bold mr-3">A</div>
+                            <div>
+                                <p class="font-bold text-gray-900">Admissions Office <span class="font-normal text-gray-500">&lt;offer@sah.edu&gt;</span></p>
+                                <p class="text-gray-500">To: <span id="recipientEmail">you@example.com</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="emailContentArea" class="prose prose-blue max-w-none text-gray-700 font-serif leading-relaxed">
+                    <!-- AI Content Injected Here -->
+                </div>
+                <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-sah-dark">SAH Admissions</p>
+                    </div>
+                    <div class="h-12 w-12 border-2 border-sah-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-stamp text-sah-primary transform -rotate-12"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 shrink-0">
+                <button onclick="closeEmail()" class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-white transition" data-i18n="email_later">Read Later</button>
+                <button onclick="acceptOffer()" class="px-4 py-2 bg-sah-primary text-white rounded-md text-sm font-medium hover:bg-blue-600 transition shadow-sm" data-i18n="email_accept">Accept Offer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- 1. CONFIGURATION ---
+        const apiKey = "AIzaSyCEIfLLwcdKzpT2S4sebgccjzr8SQIyqHE"; // USER API KEY INJECTED
+        let currentLang = 'en'; // Default Language
+
+        // --- 2. DICTIONARY ---
+        const translations = {
+            en: {
+                nav_philosophy: "Philosophy",
+                nav_growth: "Growth Data",
+                nav_ai: "AI Degree",
+                nav_apply: "Apply Now",
+                hero_title_1: "The best teacher,",
+                hero_title_2: "is yourself.",
+                hero_desc: "SAH is a university without walls. Here, we redefine education. Not for the diploma, but for lifelong growth.",
+                hero_cta: "Start Registration",
+                val_1_title: "Continuous Learning",
+                val_1_desc: "Learning is as natural as breathing. Every book, movie, and thought is a course.",
+                val_2_title: "Lifelong Growth",
+                val_2_desc: "We focus on the compound effect. Tiny daily improvements build towers of cognition.",
+                val_3_title: "Free Exploration",
+                val_3_desc: "No mandatory courses. Follow your curiosity and navigate the ocean of knowledge.",
+                val_4_title: "Self Transcendence",
+                val_4_desc: "Yesterday's you is your only competition. We celebrate every break from the comfort zone.",
+                chart_header: "Compound Growth",
+                chart_desc: "At SAH, we believe in the power of improving 1% every day. Traditional education may end, but SAH is linear and continuous.",
+                ai_title: "AI Degree Generator",
+                ai_desc: "Don't know what to study? Tell our AI Dean your hobbies (even sleeping), and we'll craft a prestigious-sounding degree for you.",
+                ai_input_label: "Your Interests / Hobbies",
+                ai_btn: "✨ Generate My Degree",
+                ai_card_label: "Degree Conferred",
+                ai_curriculum: "Core Curriculum",
+                ai_waiting: "Waiting for input...",
+                form_title: "Join the Community",
+                form_desc: "Complete the form below. Our AI Admissions Office will generate your offer letter instantly.",
+                form_type: "Inquiry Type",
+                form_fname: "First Name",
+                form_lname: "Last Name",
+                form_email: "Email",
+                form_phone: "Phone",
+                form_submit: "Submit Application",
+                email_subject: "Admission Offer: Welcome to SAH",
+                email_later: "Read Later",
+                email_accept: "Accept Offer",
+                alert_no_interest: "Please enter your interests first!",
+                alert_welcome: "Welcome to SAH University!",
+                ai_thinking: "AI is thinking...",
+                ai_writing: "AI is drafting your letter...",
+                placeholder_interest: "e.g., Video games, napping, drinking coffee...",
+            },
+            zh: {
+                nav_philosophy: "办学理念",
+                nav_growth: "成长数据",
+                nav_ai: "AI 定制学位",
+                nav_apply: "立即申请",
+                hero_title_1: "最好的老师，",
+                hero_title_2: "就是你自己。",
+                hero_desc: "SAH 是一所没有围墙的大学。在这里，我们重新定义教育。不为学历证明，只为终身成长。",
+                hero_cta: "开始注册",
+                val_1_title: "不断学习",
+                val_1_desc: "学习不是阶段性的任务，而是如呼吸般自然的日常。每一本书、电影、思考都是课程。",
+                val_2_title: "终身成长",
+                val_2_desc: "拒绝停滞。我们关注复利效应，每天微小的进步，终将汇聚成认知的高塔。",
+                val_3_title: "自在探索",
+                val_3_desc: "没有必修课的束缚。追随你的好奇心，在知识的海洋中自由航行。",
+                val_4_title: "自我超越",
+                val_4_desc: "昨天的你是唯一的竞争对手。我们庆祝每一次对舒适圈的突破。",
+                chart_header: "成长的复利",
+                chart_desc: "在SAH，我们相信每天进步1%的力量。传统的教育可能有终点，但SAH的教育是线性的、持续的。",
+                ai_title: "AI 智能教务处",
+                ai_desc: "不知道学什么？告诉 AI 教务主任你的兴趣爱好，我们将为你量身定制一个听起来很高大上的学位。",
+                ai_input_label: "你的兴趣 / 爱好 / 特长",
+                ai_btn: "✨ 生成我的专属学位",
+                ai_card_label: "授予学位名称",
+                ai_curriculum: "核心课程",
+                ai_waiting: "等待输入...",
+                form_title: "加入 SAH 社区",
+                form_desc: "填写下方信息，AI 招生办将为您实时生成录取通知书。",
+                form_type: "咨询类型",
+                form_fname: "名 (First Name)",
+                form_lname: "姓 (Last Name)",
+                form_email: "邮箱 (Email)",
+                form_phone: "电话 (Phone)",
+                form_submit: "提交申请",
+                email_subject: "录取通知：欢迎加入 SAH University",
+                email_later: "稍后阅读",
+                email_accept: "接受录取",
+                alert_no_interest: "请先输入您的兴趣爱好！",
+                alert_welcome: "欢迎加入 SAH University！",
+                ai_thinking: "AI 正在绞尽脑汁...",
+                ai_writing: "AI 正在为您撰写录取信...",
+                placeholder_interest: "例如：喜欢在沙发上躺着、喝奶茶、观察天花板纹理...",
+            }
+        };
+
+        // --- 3. LANGUAGE LOGIC ---
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.getElementById('lang-label').innerText = currentLang.toUpperCase();
+            
+            // Update Text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+
+            // Update Placeholders
+            document.getElementById('ai-interests').placeholder = translations[currentLang].placeholder_interest;
+
+            // Update Chart
+            updateChart();
+        }
+
+        // --- 4. CHART ---
+        let growthChart;
+        function initChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: getChartData(),
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 10,
+                            displayColors: false,
+                        }
+                    },
+                    scales: {
+                        y: { display: false, grid: { display: false } },
+                        x: { grid: { display: false }, ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function getChartData() {
+            const isEn = currentLang === 'en';
+            return {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                datasets: [
+                    {
+                        label: isEn ? 'SAH (Continuous)' : 'SAH (复利成长)',
+                        data: [20, 45, 75, 115, 170],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4
+                    },
+                    {
+                        label: isEn ? 'Traditional' : '传统路径',
+                        data: [20, 40, 60, 60, 60],
+                        borderColor: '#cbd5e1',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        pointRadius: 0
+                    }
+                ]
+            };
+        }
+
+        function updateChart() {
+            if (growthChart) {
+                growthChart.data = getChartData();
+                growthChart.update();
+            }
+        }
+
+        // --- 5. GEMINI API CALLER ---
+        async function callGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "AI is taking a nap. Try again.";
+            } catch (error) {
+                console.error("Gemini Error:", error);
+                return "Connection Error.";
+            }
+        }
+
+        // --- 6. AI DEGREE ---
+        async function generateDegree() {
+            const input = document.getElementById('ai-interests').value.trim();
+            if (!input) {
+                alert(translations[currentLang].alert_no_interest);
+                return;
+            }
+
+            const btn = document.getElementById('btn-generate-degree');
+            const loading = document.getElementById('degree-loading');
+            const loadingText = loading.querySelector('p');
+            
+            // Set Loading UI
+            btn.disabled = true;
+            loadingText.innerText = translations[currentLang].ai_thinking;
+            loading.classList.remove('hidden');
+
+            const isEn = currentLang === 'en';
+            const langName = isEn ? "English" : "Chinese";
+            
+            const systemPrompt = `You are the Dean of Stay at Home University. Create a humorous, academic-sounding degree title and 3 core course names based on user hobbies. Tone: Official but absurd. Language: ${langName}.`;
+            const userPrompt = `Hobby: "${input}". \nFormat:\nTitle: [Title]\nCourses:\n- [Course 1]\n- [Course 2]\n- [Course 3]`;
+
+            const result = await callGemini(userPrompt, systemPrompt);
+
+            // Parse result
+            const titleMatch = result.match(/Title:\s*(.+)/);
+            const coursesMatch = result.match(/Courses:\s*([\s\S]*)/);
+            
+            const title = titleMatch ? titleMatch[1] : (isEn ? "Ph.D in Relaxation" : "居家哲学博士");
+            const coursesText = coursesMatch ? coursesMatch[1] : "- 101 Napping";
+
+            const coursesHtml = coursesText.split('\n')
+                .filter(line => line.trim().length > 0)
+                .map(line => `<li class="flex items-start"><span class="mr-2 text-purple-500">•</span> ${line.replace(/^[-•\d.]\s*/, '')}</li>`)
+                .join('');
+
+            document.getElementById('ai-degree-title').innerText = title;
+            document.getElementById('ai-degree-courses').innerHTML = coursesHtml;
+
+            loading.classList.add('hidden');
+            btn.disabled = false;
+        }
+
+        // --- 7. ADMISSION FORM ---
+        document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('button');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            const modal = document.getElementById('emailModal');
+            const emailContent = document.getElementById('emailContentArea');
+            
+            const fname = document.getElementById('first-name').value;
+            const lname = document.getElementById('last-name').value;
+            const email = document.getElementById('email').value;
+            
+            // Loading
+            btn.disabled = true;
+            btnText.innerText = translations[currentLang].ai_writing;
+            btnIcon.className = "fas fa-circle-notch fa-spin ml-2";
+
+            document.getElementById('recipientEmail').innerText = email;
+            
+            // AI Request
+            const isEn = currentLang === 'en';
+            const langName = isEn ? "English" : "Chinese";
+            const systemPrompt = `You are the Admissions Officer at SAH University. Write a short, warm, humorous acceptance email. Theme: 'Student is the teacher'. Language: ${langName}. Use Markdown.`;
+            const userPrompt = `Applicant: ${fname} ${lname}. Accept them immediately. Keep it under 100 words.`;
+
+            const aiResponse = await callGemini(userPrompt, systemPrompt);
+            emailContent.innerHTML = marked.parse(aiResponse);
+
+            // Open Modal
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+                modal.querySelector('div').classList.add('scale-100');
+            }, 10);
+
+            // Reset Button
+            btn.disabled = false;
+            btnText.innerText = translations[currentLang].form_submit;
+            btnIcon.className = "fas fa-paper-plane ml-2";
+        });
+
+        function closeEmail() {
+            const modal = document.getElementById('emailModal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function acceptOffer() {
+            alert(translations[currentLang].alert_welcome);
+            closeEmail();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initChart);
+
+    </script>
+</body>
+</html>
